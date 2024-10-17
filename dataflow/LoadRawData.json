@@ -10,6 +10,14 @@
 						"type": "DatasetReference"
 					},
 					"name": "RawSalesData"
+				},
+				{
+					"dataset": {
+						"referenceName": "US_State_Code",
+						"type": "DatasetReference"
+					},
+					"name": "LoadStateAbbr",
+					"description": "United States State Abbreviations"
 				}
 			],
 			"sinks": [],
@@ -21,6 +29,9 @@
 				{
 					"name": "SplitModifyCols",
 					"description": "Modify timestamp to day and date columns"
+				},
+				{
+					"name": "LookupStateCol"
 				}
 			],
 			"scriptLines": [
@@ -45,7 +56,16 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> RawSalesData",
-				"RawSalesData filter((!isNull(make) || make == '') || (!isNull(model) || model =='')) ~> DeleteRowsCarModel",
+				"source(output(",
+				"          {Code } as string,",
+				"          {Alpha code} as string,",
+				"          alpha_code as string,",
+				"          State as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> LoadStateAbbr",
+				"LookupStateCol filter((!isNull(make) || make == '') || (!isNull(model) || model =='')) ~> DeleteRowsCarModel",
 				"DeleteRowsCarModel derive(day_of_sale = iif(isNull(saledate) || saledate == '', 'Unknown', substring(saledate, 0, 4))\r",
 				",",
 				"          sale_date = iif(isNull(saledate) || saledate == '', 'Unknown', substring(saledate, 4, 12))\r",
@@ -74,7 +94,11 @@
 				"    'Neutral',\r",
 				"    initCap(interior)\r",
 				")\r",
-				") ~> SplitModifyCols"
+				") ~> SplitModifyCols",
+				"RawSalesData, LoadStateAbbr lookup(RawSalesData@state == alpha_code,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupStateCol"
 			]
 		}
 	}

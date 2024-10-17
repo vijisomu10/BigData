@@ -1,0 +1,9 @@
+{
+	"name": "dataingest1982sales2015",
+	"location": "swedencentral",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "f44d6094-0fef-4a48-8b18-a723e3cf1454",
+		"tenantId": "735058e3-0e46-46ce-a1d5-c0b0a68980db"
+	}
+}

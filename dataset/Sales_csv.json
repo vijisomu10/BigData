@@ -1,0 +1,89 @@
+{
+	"name": "Sales_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Linked_Structured_Data",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "car_prices.csv",
+				"folderPath": "salesfolder",
+				"fileSystem": "structdata"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "year",
+				"type": "String"
+			},
+			{
+				"name": "make",
+				"type": "String"
+			},
+			{
+				"name": "model",
+				"type": "String"
+			},
+			{
+				"name": "trim",
+				"type": "String"
+			},
+			{
+				"name": "body",
+				"type": "String"
+			},
+			{
+				"name": "transmission",
+				"type": "String"
+			},
+			{
+				"name": "vin",
+				"type": "String"
+			},
+			{
+				"name": "state",
+				"type": "String"
+			},
+			{
+				"name": "condition",
+				"type": "String"
+			},
+			{
+				"name": "odometer",
+				"type": "String"
+			},
+			{
+				"name": "color",
+				"type": "String"
+			},
+			{
+				"name": "interior",
+				"type": "String"
+			},
+			{
+				"name": "seller",
+				"type": "String"
+			},
+			{
+				"name": "mmr",
+				"type": "String"
+			},
+			{
+				"name": "sellingprice",
+				"type": "String"
+			},
+			{
+				"name": "saledate",
+				"type": "String"
+			}
+		]
+	}
+}

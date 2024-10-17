@@ -1,0 +1,42 @@
+{
+	"name": "LoadRawData",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Sales_csv",
+						"type": "DatasetReference"
+					},
+					"name": "RawSalesData"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          year as short,",
+				"          make as string,",
+				"          model as string,",
+				"          trim as string,",
+				"          body as string,",
+				"          transmission as string,",
+				"          vin as string,",
+				"          state as string,",
+				"          condition as short,",
+				"          odometer as integer,",
+				"          color as string,",
+				"          interior as string,",
+				"          seller as string,",
+				"          mmr as integer,",
+				"          sellingprice as integer,",
+				"          saledate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> RawSalesData"
+			]
+		}
+	}
+}

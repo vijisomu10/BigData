@@ -1,0 +1,33 @@
+{
+	"name": "US_States_Code",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Linked_Structured_Data",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "US_States_Code.csv",
+				"folderPath": "salesfolder",
+				"fileSystem": "structdata"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Alpha_code",
+				"type": "String"
+			},
+			{
+				"name": "State_Abbr",
+				"type": "String"
+			}
+		]
+	}
+}

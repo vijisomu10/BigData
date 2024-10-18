@@ -12,10 +12,6 @@
 					"name": "RawSalesData"
 				},
 				{
-					"dataset": {
-						"referenceName": "US_State_Code",
-						"type": "DatasetReference"
-					},
 					"name": "LoadStateAbbr",
 					"description": "United States State Abbreviations"
 				}
@@ -28,7 +24,7 @@
 				},
 				{
 					"name": "SplitModifyCols",
-					"description": "Modify timestamp to day and date columns"
+					"description": "Modify and split several columns"
 				},
 				{
 					"name": "LookupStateCol"
@@ -63,28 +59,22 @@
 				"          State as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> LoadStateAbbr",
+				"     validateSchema: false) ~> LoadStateAbbr",
 				"LookupStateCol filter((!isNull(make) || make == '') || (!isNull(model) || model =='')) ~> DeleteRowsCarModel",
-				"DeleteRowsCarModel derive(day_of_sale = iif(isNull(saledate) || saledate == '', 'Unknown', substring(saledate, 0, 4))\r",
-				",",
-				"          sale_date = iif(isNull(saledate) || saledate == '', 'Unknown', substring(saledate, 4, 12))\r",
-				",",
+				"DeleteRowsCarModel derive(day_of_sale = iif(isNull(saledate) || saledate == '', 'Unknown', substring(saledate, 0, 4)),",
+				"          sale_date = iif(isNull(saledate) || saledate == '', 'Unknown', substring(saledate, 4, 12)),",
 				"          condition_rating = iif(condition >= 1 && condition <= 10, 'EXCELLENT',\r",
 				"iif(condition >= 11 && condition <= 20, 'FINE',\r",
 				"iif(condition >= 21 && condition <= 30, 'VERY GOOD',\r",
 				"iif(condition >= 31 && condition <= 40, 'GOOD',\r",
-				"iif(condition >= 41 && condition <= 50, 'RESTORABLE', 'UNKNOWN')))))\r",
-				",",
+				"iif(condition >= 41 && condition <= 50, 'RESTORABLE', 'UNKNOWN'))))),",
 				"          transmission = iif(\r",
 				"    isNull(transmission) || trim(transmission) == '' || lower(transmission) == 'sedan', \r",
 				"    'Manual', \r",
 				"    iif(lower(transmission) == 'automatic', 'Automatic', \r",
 				"        concat(upper(substring(transmission, 0, 1)), substring(transmission, 1))\r",
 				"    )\r",
-				")\r",
-				"\r",
-				",",
+				"),",
 				"          color = iif(     \r",
 				"    isNull(color) || trim(color) == '' || !isNull(color) && !regexMatch(lower(color), '^[a-z]+$'),     \r",
 				"    'Neutral',    \r",
@@ -93,8 +83,7 @@
 				"    isNull(interior) || trim(interior) == '' || !isNull(interior) && !regexMatch(lower(interior), '^[a-z]+$'),\r",
 				"    'Neutral',\r",
 				"    initCap(interior)\r",
-				")\r",
-				") ~> SplitModifyCols",
+				")) ~> SplitModifyCols",
 				"RawSalesData, LoadStateAbbr lookup(RawSalesData@state == alpha_code,",
 				"     multiple: false,",
 				"     pickup: 'any',",

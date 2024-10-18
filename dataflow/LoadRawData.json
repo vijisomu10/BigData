@@ -12,11 +12,23 @@
 					"name": "RawSalesData"
 				},
 				{
+					"dataset": {
+						"referenceName": "US_States_Code",
+						"type": "DatasetReference"
+					},
 					"name": "LoadStateAbbr",
 					"description": "United States State Abbreviations"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Sales_Sink",
+						"type": "DatasetReference"
+					},
+					"name": "DimSales"
+				}
+			],
 			"transformations": [
 				{
 					"name": "DeleteRowsCarModel",
@@ -53,13 +65,12 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> RawSalesData",
 				"source(output(",
-				"          {Code } as string,",
-				"          {Alpha code} as string,",
-				"          alpha_code as string,",
-				"          State as string",
+				"          Alpha_code as string,",
+				"          State_Abbr as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false) ~> LoadStateAbbr",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> LoadStateAbbr",
 				"LookupStateCol filter((!isNull(make) || make == '') || (!isNull(model) || model =='')) ~> DeleteRowsCarModel",
 				"DeleteRowsCarModel derive(day_of_sale = iif(isNull(saledate) || saledate == '', 'Unknown', substring(saledate, 0, 4)),",
 				"          sale_date = iif(isNull(saledate) || saledate == '', 'Unknown', substring(saledate, 4, 12)),",
@@ -83,11 +94,39 @@
 				"    isNull(interior) || trim(interior) == '' || !isNull(interior) && !regexMatch(lower(interior), '^[a-z]+$'),\r",
 				"    'Neutral',\r",
 				"    initCap(interior)\r",
-				")) ~> SplitModifyCols",
-				"RawSalesData, LoadStateAbbr lookup(RawSalesData@state == alpha_code,",
+				"),",
+				"          State_Abbr = iif(isNull(State_Abbr), 'Unknown', State_Abbr)) ~> SplitModifyCols",
+				"RawSalesData, LoadStateAbbr lookup(state == Alpha_code,",
 				"     multiple: false,",
 				"     pickup: 'any',",
-				"     broadcast: 'auto')~> LookupStateCol"
+				"     broadcast: 'auto')~> LookupStateCol",
+				"SplitModifyCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          vin,",
+				"          year,",
+				"          make,",
+				"          model,",
+				"          trim,",
+				"          body,",
+				"          transmission,",
+				"          state = State_Abbr,",
+				"          Alpha_code,",
+				"          State_Abbr,",
+				"          condition,",
+				"          condition_rating,",
+				"          color,",
+				"          interior,",
+				"          mmr,",
+				"          sellingprice,",
+				"          sale_date,",
+				"          day_of_sale",
+				"     )) ~> DimSales"
 			]
 		}
 	}

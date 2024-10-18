@@ -1,0 +1,23 @@
+{
+	"name": "Sales_Sink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Linked_Structured_Data",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "transformoutput",
+				"fileSystem": "pipelinesink"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

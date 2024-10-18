@@ -327,7 +327,8 @@
 						"          mmr,",
 						"          sellingprice,",
 						"          sale_date,",
-						"          day_of_sale",
+						"          day_of_sale,",
+						"          seller",
 						"     )) ~> DimSales"
 					]
 				}

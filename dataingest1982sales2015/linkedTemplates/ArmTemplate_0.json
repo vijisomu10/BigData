@@ -246,9 +246,6 @@
 						{
 							"name": "UpdateHeadersColumns",
 							"description": "Renaming LookupStateCol to deselect alpha_code"
-						},
-						{
-							"name": "derivedColumn1"
 						}
 					],
 					"scriptLines": [
@@ -280,18 +277,14 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false) ~> LoadStateAbbr",
-						"UpdateHeadersColumns filter((!isNull(Make) || Make == '') || (!isNull(Model) || Model =='')) ~> DeleteRowsCarModel",
+						"UpdateHeadersColumns filter((!isNull(Make) || Make == '') || (!isNull(Model) || Model =='') || (!isNull(MMR))) ~> DeleteRowsCarModel",
 						"DeleteRowsCarModel derive(Condition = iif(isNull(Condition), 0, Condition),",
 						"          Day_Of_Sale = iif(\r",
 						"    isNull(SaleDate) || SaleDate == '', \r",
 						"    'Unknown', \r",
 						"    substring(SaleDate, 0, 4)\r",
 						"),",
-						"          Sale_Date = iif(\r",
-						"    isNull(SaleDate) || SaleDate == '', \r",
-						"    'Jan 01 2013', \r",
-						"    substring(SaleDate, 5, 11)\r",
-						"),",
+						"          Sale_Date = toString(toTimestamp(substring(SaleDate, 5, 11), 'MMM dd yyyy'), 'yyyy-MM-dd'),",
 						"          Condition_Rating = iif(Condition >= 1 && Condition <= 10, 'EXCELLENT',\r",
 						"iif(Condition >= 11 && Condition <= 20, 'FINE',\r",
 						"iif(Condition >= 21 && Condition <= 30, 'VERY GOOD',\r",
@@ -324,7 +317,7 @@
 						"     broadcast: 'auto')~> LookupStateCol",
 						"LookupStateCol select(mapColumn(",
 						"          VinID = vin,",
-						"          Year = year,",
+						"          Make_Year = year,",
 						"          Make = make,",
 						"          Model = model,",
 						"          Trim = trim,",
@@ -343,8 +336,7 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> UpdateHeadersColumns",
-						"SplitModifyCols derive(NewDate = toString(toTimestamp(Sale_Date, 'MMM dd yyyy'), 'yyyy-MM-dd')) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"SplitModifyCols sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     truncate: true,",
 						"     umask: 0022,",
@@ -354,7 +346,7 @@
 						"     skipDuplicateMapOutputs: true,",
 						"     mapColumn(",
 						"          VinID,",
-						"          Year,",
+						"          Make_Year,",
 						"          Make,",
 						"          Model,",
 						"          Trim,",
@@ -371,8 +363,7 @@
 						"          MMR,",
 						"          SellingPrice,",
 						"          Day_Of_Sale,",
-						"          Sale_Date,",
-						"          NewDate",
+						"          Sale_Date",
 						"     )) ~> DimSales"
 					]
 				}

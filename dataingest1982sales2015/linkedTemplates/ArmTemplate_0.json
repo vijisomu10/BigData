@@ -314,7 +314,7 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false) ~> LoadStateAbbr",
-						"UpdateHeadersColumns filter((!isNull(Make) || Make == '') || (!isNull(Model) || Model =='') || (!isNull(MMR))) ~> DeleteRowsCarModel",
+						"UpdateHeadersColumns filter((!isNull(Make) || Make == '') || (!isNull(Model) || Model =='') || (!isNull(MMR)) || (!isNull(SellingPrice))) ~> DeleteRowsCarModel",
 						"DeleteRowsCarModel derive(Condition = iif(isNull(Condition), 49, Condition),",
 						"          Day_Of_Sale = iif(\r",
 						"    isNull(SaleDate) || SaleDate == '', \r",

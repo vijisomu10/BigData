@@ -270,7 +270,7 @@
 					],
 					"transformations": [
 						{
-							"name": "DeleteRowsCarModel",
+							"name": "FilterMake",
 							"description": "Delete Rows - Null Column Value in Car Make or Model"
 						},
 						{
@@ -283,6 +283,15 @@
 						{
 							"name": "UpdateHeadersColumns",
 							"description": "Renaming LookupStateCol to deselect alpha_code"
+						},
+						{
+							"name": "FilterModel"
+						},
+						{
+							"name": "FilterMMR"
+						},
+						{
+							"name": "FilterSellingPrice"
 						}
 					],
 					"scriptLines": [
@@ -314,8 +323,10 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false) ~> LoadStateAbbr",
-						"UpdateHeadersColumns filter((!isNull(Make) || Make == '') || (!isNull(Model) || Model =='') || (!isNull(MMR)) || (!isNull(SellingPrice))) ~> DeleteRowsCarModel",
-						"DeleteRowsCarModel derive(Condition = iif(isNull(Condition), 49, Condition),",
+						"UpdateHeadersColumns filter((",
+						"    !isNull(Make)",
+						")) ~> FilterMake",
+						"FilterSellingPrice derive(Condition = iif(isNull(Condition), 49, Condition),",
 						"          Day_Of_Sale = iif(\r",
 						"    isNull(SaleDate) || SaleDate == '', \r",
 						"    'Mon', \r",
@@ -340,7 +351,8 @@
 						"),",
 						"          Model = iif(isNull(Model) || isDate(Model), 'Unknown', Model),",
 						"          Trim = iif(isNull(Trim), 'Unknown', Trim),",
-						"          Body = iif(isNull(Body), 'Unknown', Body)) ~> SplitModifyCols",
+						"          Body = iif(isNull(Body), 'Unknown', Body),",
+						"          State_Abbr = iif(isNull(State_Abbr), 'California', 'Unknown')) ~> SplitModifyCols",
 						"RawSalesData, LoadStateAbbr lookup(state == Alpha_code,",
 						"     multiple: false,",
 						"     pickup: 'any',",
@@ -366,6 +378,9 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> UpdateHeadersColumns",
+						"FilterMake filter((!isNull(Model))) ~> FilterModel",
+						"FilterModel filter((!isNull(MMR))) ~> FilterMMR",
+						"FilterMMR filter((!isNull(SellingPrice))) ~> FilterSellingPrice",
 						"SplitModifyCols sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     truncate: true,",

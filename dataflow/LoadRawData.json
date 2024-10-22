@@ -87,7 +87,7 @@
 				"),",
 				"          Sale_Date = iif(\r",
 				"    isNull(SaleDate) || SaleDate == '', \r",
-				"    'Unknown', \r",
+				"    'Jan 01 2013', \r",
 				"    substring(SaleDate, 5, 11)\r",
 				"),",
 				"          Condition_Rating = iif(Condition >= 1 && Condition <= 10, 'EXCELLENT',\r",

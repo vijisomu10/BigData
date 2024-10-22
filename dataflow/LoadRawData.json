@@ -44,6 +44,9 @@
 				{
 					"name": "UpdateHeadersColumns",
 					"description": "Renaming LookupStateCol to deselect alpha_code"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -61,8 +64,8 @@
 				"          color as string,",
 				"          interior as string,",
 				"          seller as string,",
-				"          mmr as long '###,###,###,###',",
-				"          sellingprice as long '000,000,000',",
+				"          mmr as float '##0.##',",
+				"          sellingprice as float '##0.##',",
 				"          saledate as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
@@ -85,7 +88,7 @@
 				"          Sale_Date = iif(\r",
 				"    isNull(SaleDate) || SaleDate == '', \r",
 				"    'Unknown', \r",
-				"    substring(SaleDate, 4, 12)\r",
+				"    substring(SaleDate, 5, 11)\r",
 				"),",
 				"          Condition_Rating = iif(Condition >= 1 && Condition <= 10, 'EXCELLENT',\r",
 				"iif(Condition >= 11 && Condition <= 20, 'FINE',\r",
@@ -108,8 +111,8 @@
 				"    'Neutral',\r",
 				"    initCap(Interior_Color)\r",
 				"),",
-				"          MMR = iif(isNull(MMR), 0, toInteger(MMR)),",
-				"          SellingPrice = iif(isNull(SellingPrice), 0, toInteger(SellingPrice)),",
+				"          MMR = iif(isNull(MMR), 0.0, MMR),",
+				"          SellingPrice = iif(isNull(SellingPrice), 0.0, SellingPrice),",
 				"          Model = iif(isNull(Model) || isDate(Model), 'Unknown', Model),",
 				"          Trim = iif(isNull(Trim), 'Unknown', Trim),",
 				"          Body = iif(isNull(Body), 'Unknown', Body)) ~> SplitModifyCols",
@@ -138,7 +141,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> UpdateHeadersColumns",
-				"SplitModifyCols sink(allowSchemaDrift: true,",
+				"SplitModifyCols derive(NewDate = toString(toTimestamp(Sale_Date, 'MMM dd yyyy'), 'yyyy-MM-dd')) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     truncate: true,",
 				"     umask: 0022,",
@@ -165,7 +169,8 @@
 				"          MMR,",
 				"          SellingPrice,",
 				"          Day_Of_Sale,",
-				"          Sale_Date",
+				"          Sale_Date,",
+				"          NewDate",
 				"     )) ~> DimSales"
 			]
 		}

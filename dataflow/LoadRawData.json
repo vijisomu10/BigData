@@ -88,6 +88,7 @@
 				"    !isNull(Make)",
 				")) ~> FilterMake",
 				"FilterSellingPrice derive(Condition = iif(isNull(Condition), 49, Condition),",
+				"          Odometer = iif(isNull(Odometer), 0, Odometer),",
 				"          Day_Of_Sale = iif(\r",
 				"    isNull(SaleDate) || SaleDate == '', \r",
 				"    'Mon', \r",

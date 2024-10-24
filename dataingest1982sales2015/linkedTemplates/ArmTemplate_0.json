@@ -352,7 +352,7 @@
 						"          Model = iif(isNull(Model) || isDate(Model), 'Unknown', Model),",
 						"          Trim = iif(isNull(Trim), 'Unknown', Trim),",
 						"          Body = iif(isNull(Body), 'Unknown', Body),",
-						"          State_Abbr = iif(isNull(State_Abbr), 'Mexico', State_Abbr)) ~> SplitModifyCols",
+						"          State_Abbr = iif(isNull(State_Abbr), 'Canada', State_Abbr)) ~> SplitModifyCols",
 						"RawSalesData, LoadStateAbbr lookup(state == Alpha_code,",
 						"     multiple: false,",
 						"     pickup: 'any',",

@@ -1,0 +1,17 @@
+{
+	"name": "Yearly_Sales",
+	"properties": {
+		"content": {
+			"query": "-- This is auto-generated code\nSELECT\n    Year(Sale_Date), \n    FORMAT(SUM(SellingPrice), 'C', 'en-US') AS TotalSales\nFROM\n    OPENROWSET(\n        BULK 'https://storage1982sales2015.dfs.core.windows.net/pipelinesink/transformoutput/part-*',\n        FORMAT = 'CSV', \n        HEADER_ROW = TRUE,\n        PARSER_VERSION = '2.0'\n    ) AS [result]\nGROUP BY \n    Year(Sale_Date)\nORDER BY \n    Year(Sale_Date) Desc\n;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

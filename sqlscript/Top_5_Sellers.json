@@ -1,0 +1,17 @@
+{
+	"name": "Top_5_Sellers",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP 5\n    Seller, State_Abbr AS Seller_State,\n    FORMAT(SUM(SellingPrice), 'C', 'en-US') AS TotalSales\nFROM\n    OPENROWSET(\n        BULK 'https://storage1982sales2015.dfs.core.windows.net/pipelinesink/transformoutput/part-*',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        PARSER_VERSION = '2.0'\n    ) AS [result]\nGROUP BY \n    Seller, State_Abbr\nORDER BY \n    TotalSales DESC;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": -1
+		},
+		"type": "SqlQuery"
+	}
+}

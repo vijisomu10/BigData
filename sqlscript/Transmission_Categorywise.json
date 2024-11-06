@@ -1,0 +1,17 @@
+{
+	"name": "Transmission_Categorywise",
+	"properties": {
+		"content": {
+			"query": "-- Yearwise total sales\nSELECT\n    Transmission,\n    COUNT(*) AS Total_Count\nFROM\n    OPENROWSET(\n        BULK 'https://storage1982sales2015.dfs.core.windows.net/pipelinesink/transformoutput/part-*',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        PARSER_VERSION = '2.0'\n    ) AS [result]\nGROUP BY \n    Transmission\nORDER BY\n    Total_Count DESC; ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

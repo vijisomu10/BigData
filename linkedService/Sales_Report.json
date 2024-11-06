@@ -1,0 +1,12 @@
+{
+	"name": "Sales_Report",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "PowerBIWorkspace",
+		"typeProperties": {
+			"workspaceID": "2ad152d6-1f57-45a1-adf6-a7ad94115826",
+			"tenantID": "735058e3-0e46-46ce-a1d5-c0b0a68980db"
+		}
+	}
+}

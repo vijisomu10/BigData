@@ -1,0 +1,17 @@
+{
+	"name": "Average_Sales_By_Year",
+	"properties": {
+		"content": {
+			"query": "-- This is auto-generated code\nSELECT\n    Year(Sale_Date) AS Sales_year,\n    FORMAT(AVG(SellingPrice), 'C', 'en-US') AS Average_Sales\nFROM\n    OPENROWSET(\n        BULK 'https://storage1982sales2015.dfs.core.windows.net/pipelinesink/transformoutput/part-*',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        PARSER_VERSION = '2.0'\n    ) AS [result]\nGROUP BY \n    Year(Sale_Date);\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": -1
+		},
+		"type": "SqlQuery"
+	}
+}

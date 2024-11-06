@@ -1,0 +1,17 @@
+{
+	"name": "Car_Condition_Rating_Count",
+	"properties": {
+		"content": {
+			"query": "SELECT \n    Condition_Rating,\n    COUNT(*) AS Total_Rating_Count    \nFROM\n    OPENROWSET(\n        BULK 'https://storage1982sales2015.dfs.core.windows.net/pipelinesink/transformoutput/part-*',\n        FORMAT = 'CSV', \n        HEADER_ROW = TRUE,\n        PARSER_VERSION = '2.0'\n    ) AS [result]\nGROUP BY \n    Condition_Rating\nORDER BY \n    Total_Rating_Count DESC;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": -1
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"name": "Monthwise_Growth_Percentage",
+	"properties": {
+		"content": {
+			"query": "WITH MonthlySales AS (\n    SELECT \n        YEAR(Sale_Date) AS SaleYear,\n        MONTH(Sale_Date) AS SaleMonth,\n        SUM(SellingPrice) AS TotalSales\n    FROM\n        OPENROWSET(\n            BULK 'https://storage1982sales2015.dfs.core.windows.net/pipelinesink/transformoutput/part-*',\n            FORMAT = 'CSV', \n            HEADER_ROW = TRUE,\n            PARSER_VERSION = '2.0'\n        ) AS [result]\n    GROUP BY \n        YEAR(Sale_Date),\n        MONTH(Sale_Date)\n)\nSELECT \n    SaleYear,\n    SaleMonth,\n    FORMAT(TotalSales, 'C', 'en-US') AS CurrentMonthSales,\n    FORMAT(LAG(TotalSales) OVER (ORDER BY SaleYear, SaleMonth), 'C', 'en-US') AS PreviousMonthSales,\n    CASE \n        WHEN LAG(TotalSales) OVER (ORDER BY SaleYear, SaleMonth) IS NULL THEN NULL\n        ELSE ROUND(((TotalSales - LAG(TotalSales) OVER (ORDER BY SaleYear, SaleMonth)) / \n              LAG(TotalSales) OVER (ORDER BY SaleYear, SaleMonth)) * 100, 2) \n    END AS MonthWiseGrowthPercentage\nFROM \n    MonthlySales\nORDER BY \n    SaleYear, SaleMonth;\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": -1
+		},
+		"type": "SqlQuery"
+	}
+}

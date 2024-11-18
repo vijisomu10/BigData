@@ -1,0 +1,51 @@
+using System;
+using System.IO;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Logging;
+using Azure.Storage.Blobs;
+using CsvHelper;
+using System.Globalization;
+public static class ProcessCsvFile
+{
+ [FunctionName("ProcessCsvFile")]
+ public static void Run([BlobTrigger("incoming-csv/{name}", Connection = "AzureWebJobsStorage")] Stream
+myBlob, string name, ILogger log)
+ {
+ log.LogInformation($"Processing CSV file: {name}");
+ using (var reader = new StreamReader(myBlob))
+ using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+ {
+ var records = csv.GetRecords<TransactionRecord>();
+ foreach (var record in records)
+ {
+ // Exempel: Spara i SQL Database
+ SaveToDatabase(record);
+ }
+ }
+ }
+ private static void SaveToDatabase(TransactionRecord record)
+ {
+ var connectionString = Environment.GetEnvironmentVariable("SQLConnectionString");
+ using (var connection = new SqlConnection(connectionString))
+ {
+ connection.Open();
+ var query = "INSERT INTO Transactions (Id, Date, Amount, Customer) VALUES (@Id, @Date, @Amount,
+@Customer)";
+ using (var command = new SqlCommand(query, connection))
+ {
+ command.Parameters.AddWithValue("@Id", record.Id);
+ command.Parameters.AddWithValue("@Date", record.Date);
+ command.Parameters.AddWithValue("@Amount", record.Amount);
+ command.Parameters.AddWithValue("@Customer", record.Customer);
+ command.ExecuteNonQuery();
+ }
+ }
+ }
+}
+public class TransactionRecord
+{
+ public int Id { get; set; }
+ public DateTime Date { get; set; }
+ public decimal Amount { get; set; }
+ public string Customer { get; set; }
+}
